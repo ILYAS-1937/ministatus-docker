@@ -81,7 +81,16 @@ jobs:
             echo "Le rapport JSON est indisponible." >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      # 9. Publier les rapports comme artefacts
+      # 9. Génération du SBOM (CycloneDX)
+      - name: Génération du SBOM (CycloneDX)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}:ci
+          format: cyclonedx
+          output: sbom.json
+          exit-code: "0"
+
+      # 10. Publier les rapports comme artefacts
       - name: Publier les rapports
         if: always()
         uses: actions/upload-artifact@v4
@@ -90,9 +99,10 @@ jobs:
           path: |
             trivy-report.json
             trivy-report.html
+            sbom.json
           if-no-files-found: warn
 
-      # 10. Bloquer le pipeline en cas de vulnérabilités graves
+      # 11. Bloquer le pipeline en cas de vulnérabilités graves
       - name: Quality gate (HIGH et CRITICAL)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
