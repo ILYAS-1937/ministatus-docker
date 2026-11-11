@@ -1,12 +1,12 @@
 # Étape 1 : Build (compilation et dépendances)
-FROM python:3.12-slim AS builder
+FROM python:3.15-slim AS builder
 
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 # Étape 2 : Runtime (exécution finale)
-FROM python:3.12-slim
+FROM python:3.15-slim
 
 ARG APP_VERSION=dev
 ENV APP_VERSION=${APP_VERSION} \
